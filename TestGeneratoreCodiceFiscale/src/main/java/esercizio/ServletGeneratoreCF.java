@@ -18,6 +18,7 @@ public class ServletGeneratoreCF extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
+		ServicesCrud crud = new ServicesCrud("jpa-cf");
 		
 		String nome = (String) request.getParameter("nome");
 		String cognome = (String) request.getParameter("cognome");
@@ -29,16 +30,27 @@ public class ServletGeneratoreCF extends HttpServlet {
 		String comune = (String) request.getParameter("comune");
 		
 		
-		GeneratoreCodice generatoreCodice = new GeneratoreCodice(nome, cognome, giorno, mese, anno, sesso, comune);
+		Persona utente = new Persona(nome, cognome, giorno, mese, anno, sesso, comune);
+		crud.jpaCreate(utente);
 		
-		String codice = generatoreCodice.getCodiceFiscale();
+		String codice = utente.getCodiceFiscale();
+		crud.jpaUpdate(utente);
+		
+		if(codice != null){
+			
+			RequestDispatcher requestDispatcherObj = request.getRequestDispatcher("/Risposta.jsp");
+			
+			request.setAttribute("codice", codice);
+			requestDispatcherObj.forward(request, response);
+			
+		}
 		
 		
-		
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		
-		out.print("<html><body>");
+//		response.setContentType("text/html");
+//		PrintWriter out = response.getWriter();
+//		
+//		
+//		out.print("<html><body>");
 		
 		
 //		try {
@@ -50,9 +62,11 @@ public class ServletGeneratoreCF extends HttpServlet {
 //			rd.forward(request, response);
 //		}
 		
-		out.print("Il Codice Fiscale è: " + codice);
-		out.print("</body></html>");
 		
+		
+//		out.print("Il Codice Fiscale è: " + codice);
+//		out.print("</body></html>");
+//		
 	}
 
 }

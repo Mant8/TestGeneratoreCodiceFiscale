@@ -12,7 +12,7 @@ public class MainProva {
 		String sesso = "f";
 		String comune = null;
 		
-		GeneratoreCodice gc = new GeneratoreCodice(nome, cognome, giorno, mese, anno, sesso, comune);
+		Persona gc = new  Persona(nome, cognome, giorno, mese, anno, sesso, comune);
 		
 		String codice = gc.getCodiceFiscale();
 		

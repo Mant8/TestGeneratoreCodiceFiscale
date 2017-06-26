@@ -3,7 +3,18 @@ package esercizio;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class GeneratoreCodice {
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "Persona", schema = "CodiceFiscale")
+public class Persona {
+	
+	@Id
+	@GeneratedValue
+	private Integer codicePersona;
 	
 	private String nome;
 	private String cognome;
@@ -14,12 +25,12 @@ public class GeneratoreCodice {
 	private String comune;
 	
 	
-	private String codiceFinale;
+	private String codiceFiscale;
+	
+	public Persona() {}
 	
 	
-	
-	
-	public GeneratoreCodice(String nome, String cognome, int giorno, String mese, String anno, String sesso, String comune) {
+	public Persona(String nome, String cognome, int giorno, String mese, String anno, String sesso, String comune) {
 		this.nome = nome;
 		this.cognome = cognome;
 		this.giorno = giorno;
@@ -37,19 +48,31 @@ public class GeneratoreCodice {
 	}
 	
 	public String separatoreConsonantieVocali(String parola) {
-		char[] consonanti = new char[20];
-		char[] vocali = new char[20];
+		
+		parola = parola.replace(" ", "");
+		
+		String consonanti = " ";
+		String vocali = " ";
 		int j = 0;
 		int z = 0;
 		
 		for (int i = 0; i < parola.length(); i++) {
 			if(!isVocale(parola.charAt(i)))
-				consonanti[j++] = parola.charAt(i);
-			else vocali[z++] = parola.charAt(i);
+				consonanti += String.valueOf(parola.charAt(i));
+			else vocali += String.valueOf(parola.charAt(i));
 		}
-		String ritorno = String.valueOf(consonanti).concat( String.valueOf(vocali) );
+		
+		
+		
+	
+		
+//		String cons = String.valueOf(consonanti);
+//		String voc = String.valueOf(vocali);
+		
+		String ritorno = consonanti+vocali;
+		
 		System.out.println(ritorno);
-		return ritorno;
+		return ritorno.replace(" ", "");
 	}
 		
 	public String riempiConX(String parola) {
@@ -58,6 +81,18 @@ public class GeneratoreCodice {
 		}
 		return parola;
 	}
+	
+	public boolean seNomeHaAlmenoQuattroConsonanti(String parola) {
+		int counter = 0;
+		for (int i = 0; i < parola.length(); i++) {
+			if(!isVocale(parola.charAt(i)))
+				counter++;
+			if(counter >=4)
+				return true;
+		}
+		return false;
+	}
+	
 	
 	public String  codiceCognome() {
 		String codiceCognome;
@@ -73,7 +108,13 @@ public class GeneratoreCodice {
 	
 	public String codiceNome() {
 		String codiceNome;
+		
+		
 		String codice = separatoreConsonantieVocali(this.nome);
+		
+		if(seNomeHaAlmenoQuattroConsonanti(this.nome.replaceAll(" ", "")))
+			codice = codice.substring(0, 1) + codice.substring(2);
+		
 		if(codice.length() >= 3)
 			codiceNome = codice.substring(0, 3);
 		else codiceNome = riempiConX(codice);
@@ -115,9 +156,12 @@ public class GeneratoreCodice {
 	
 	public String getCodiceFiscale() {
 		
-		codiceFinale = codiceCognome() + codiceNome() + codiceData() + codiceComune();
+		this.codiceFiscale = codiceCognome() + codiceNome() + codiceData() + codiceComune();
 		
-		return codiceFinale;
+		this.codiceFiscale = this.codiceFiscale.toUpperCase();
+		
+		
+		return this.codiceFiscale;
 	}
 
 }
