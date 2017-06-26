@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 public class ServletGeneratoreCF extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	private static final String REG_EXPR_DATA = "[0-9]";
-	private static final String REG_EXPR_NOME = "[a-zA-Zאטלעש]";
+	private static final String REG_EXPR_DATA = "([0-9]+)";
+	private static final String REG_EXPR_NOME = "([a-zA-Z]+)";
 
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -47,17 +47,17 @@ public class ServletGeneratoreCF extends HttpServlet {
 		String codice = utente.getCodiceFiscale();
 		crud.jpaUpdate(utente);
 		
-//		if(!verificaRegex(nome, cognome, giorno, anno)){
-//			
-//			RequestDispatcher requestDispatcherObj = request.getRequestDispatcher("/Risposta.jsp");
-//			
-//			request.setAttribute("flag", false);
-//			requestDispatcherObj.forward(request, response);
-//			
-//			
-//		}
+		if(!verificaRegex(nome, cognome, giorno, anno)){
+			
+			RequestDispatcher requestDispatcherObj = request.getRequestDispatcher("/Risposta.jsp");
+			
+			request.setAttribute("flag", false);
+			requestDispatcherObj.forward(request, response);
+			
+			
+		}
 		
-		if(codice != null){
+		else if(codice != null){
 			
 			RequestDispatcher requestDispatcherObj = request.getRequestDispatcher("/Risposta.jsp");
 			
@@ -84,7 +84,7 @@ public class ServletGeneratoreCF extends HttpServlet {
 		
 		if (nome != null && Pattern.matches(REG_EXPR_NOME, nome) &&
 				cognome != null && Pattern.matches(REG_EXPR_NOME, cognome) &&
-				giorno >0 && giorno <30 &&
+				giorno >0 && giorno <= 31 &&
 				anno != null && Pattern.matches(REG_EXPR_DATA, anno))
 			return true;
 		
