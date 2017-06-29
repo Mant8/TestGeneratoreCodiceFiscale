@@ -1,6 +1,7 @@
+<%@page import="java.util.HashMap"%>
+<%@page import="esercizio.GeneratoreListaComuni"%>
 <%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.ResultSet"%>
-<%@page import="esercizio.DBconnector"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="esercizio.ServicesCrud"%>
@@ -22,9 +23,18 @@ Generatore di codice Fiscale
 <form action="genCF">
 Nome: <input type="text" name="nome"><br>
 Cognome: <input type="text" name="cognome"><br>
-Data di nascita: <input type="text" name="giorno">
 
- <select name="mese">
+Data di nascita:
+
+<select name="giorno">
+<option value="0" selected>Giorno</option>
+
+<% for(int giorno = 1; giorno <=31; giorno++) { %>
+	<option value="<%=giorno %>"> <%=giorno %>  </option>
+<% } %>
+</select>
+
+<select name="mese">
 <option value="0" selected>Mese:</option>
 <option value="a"> Gennaio  </option>
 <option value="b"> Febbraio  </option>
@@ -38,9 +48,15 @@ Data di nascita: <input type="text" name="giorno">
 <option value="r"> Ottobre  </option>
 <option value="s"> Novembre  </option>
 <option value="t"> Dicembre  </option>
-
 </select>
- <input type="text" name="anno"><br>
+
+<select name="anno">
+<option value="0" selected>Anno</option>
+
+<% for(int anno = 1920; anno <=2017; anno++) { %>
+	<option value="<%=anno %>"> <%=anno %>  </option>
+<% } %>
+</select><br>
  
 Sesso:
 <select name="sesso">
@@ -53,29 +69,12 @@ Comune di nascita:
 <select name="comune">
 <option value="0" selected>(Seleziona il comune:)</option>
 
-<% 
+<%-- <% GeneratoreListaComuni gn = new GeneratoreListaComuni();   gn.salvaListaComuni(); %> --%>
 
-List<String> listaComuni = new ArrayList<String>();
+<% HashMap<String, String> listaComuni = GeneratoreListaComuni.leggiListaComuni(); %>
 
-DBconnector connector = new DBconnector();
-
-connector.connectToDB();
-
-ResultSet resultSet = connector.exeQuery("SELECT Comune FROM comuni");
-
-try {
-	while(resultSet.next()) {
-		listaComuni.add(resultSet.getString("Comune"));
-	}
-	
-	
-} catch (SQLException e) {
-	e.printStackTrace();
-}
-%>
-
-<% for(String name : listaComuni) { %>
-	<option value="<%=name %>"> <%=name %>  </option>
+<% for(String key : listaComuni.keySet()) { %>
+	<option value="<%=listaComuni.get(key) %>"> <%=key %>  </option>
 <% } %>
 
 </select> <br>

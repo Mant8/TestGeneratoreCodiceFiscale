@@ -2,6 +2,7 @@ package esercizio;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.servlet.RequestDispatcher;
@@ -23,18 +24,13 @@ public class ServletGeneratoreCF extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
+		
 		ServicesCrud crud = new ServicesCrud("jpa-cf");
 		
 		String nome = (String) request.getParameter("nome");
 		String cognome = (String) request.getParameter("cognome");
-		String giorno1 = (String) request.getParameter("giorno");
-		int giorno;
-		try{
-			giorno = Integer.parseInt(giorno1);
-		} catch(NumberFormatException e) {
-			System.out.println("Non hai inserito un giorno valido");
-			giorno = 0;
-		}
+		String giornoStringa = (String) request.getParameter("giorno");
+		int giorno= Integer.parseInt(giornoStringa);
 		String mese = (String)  request.getParameter("mese");
 		String anno = (String) request.getParameter("anno");
 		String sesso = (String) request.getParameter("sesso");
@@ -42,32 +38,11 @@ public class ServletGeneratoreCF extends HttpServlet {
 		
 		
 		Persona utente = new Persona(nome, cognome, giorno, mese, anno, sesso, comune);
-		crud.jpaCreate(utente);
 		
-		String codice = utente.getCodiceFiscale();
-		crud.jpaUpdate(utente);
+		if(!cercaPersonaNelDatabase(request, response, crud, utente))
+			salvaCodiceNelDatabase(request, response, crud, utente);
 		
-		if(!verificaRegex(nome, cognome, giorno, anno)){
-			
-			RequestDispatcher requestDispatcherObj = request.getRequestDispatcher("/Risposta.jsp");
-			
-			request.setAttribute("flag", false);
-			requestDispatcherObj.forward(request, response);
-			
-			
-		}
-		
-		else if(codice != null){
-			
-			RequestDispatcher requestDispatcherObj = request.getRequestDispatcher("/Risposta.jsp");
-			
-			request.setAttribute("flag", true);
-			request.setAttribute("codice", codice);
-			requestDispatcherObj.forward(request, response);
-			
-		}
-		
-		
+		crud.closeLogicaJPA();
 			
 //		try {
 //			int parseInt = Integer.parseInt(attribute);
@@ -80,7 +55,47 @@ public class ServletGeneratoreCF extends HttpServlet {
 		
 	}
 	
-	protected boolean verificaRegex(String nome, String cognome, int giorno, String anno) {
+	public void salvaCodiceNelDatabase(HttpServletRequest request, HttpServletResponse response, ServicesCrud crud, Persona utente) throws ServletException, IOException {
+		
+		
+		crud.jpaCreate(utente);
+		
+		String codice = utente.getCodiceFiscale();
+		crud.jpaUpdate(utente);
+		
+		
+		if(codice != null){
+			
+			response.setContentType("text/html");
+			PrintWriter out = response.getWriter();
+
+			out.print("<html><body>");
+			out.print("<h1>Il codice fiscale è: "+ codice + "</h1>");
+			out.print("</body></html>");
+		}
+	}
+	
+	public boolean cercaPersonaNelDatabase(HttpServletRequest request, HttpServletResponse response, ServicesCrud crud, Persona utente) throws ServletException, IOException {
+		
+		List<Persona> utenti = crud.jpaRead("SELECT s FROM Persona s").getResultList();
+		
+		for(Persona cercata : utenti){
+			if(utente.equivale(cercata)) {
+				
+				response.setContentType("text/html");
+				PrintWriter out = response.getWriter();
+
+				out.print("<html><body>");
+				out.print("<h1>Utente già esistente nel Database, il suo Cf è: " + cercata.getCodiceFiscaleCalcolato() + "</h1>");
+				out.print("</body></html>");
+				
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean verificaRegex(String nome, String cognome, int giorno, String anno) {
 		
 		if (nome != null && Pattern.matches(REG_EXPR_NOME, nome) &&
 				cognome != null && Pattern.matches(REG_EXPR_NOME, cognome) &&

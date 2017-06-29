@@ -15,7 +15,10 @@ public class DBconnector {
 		try {
 			Class.forName("com.mysql.jdbc.Driver"); 
 			
-			Connection connection = DriverManager.getConnection("jdbc:mysql://192.168.237.174:3306/CodiceFiscale", "root", "tirocinio123");
+			//192.168.237.174:3306
+			//192.168.1.6
+			
+			Connection connection = DriverManager.getConnection("jdbc:mysql://192.168.1.6/CodiceFiscale", "root", "tirocinio123");
 
 			Statement createStatement = connection.createStatement();
 			

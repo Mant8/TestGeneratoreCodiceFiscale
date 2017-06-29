@@ -49,12 +49,10 @@ public class Persona {
 	
 	public String separatoreConsonantieVocali(String parola) {
 		
-		parola = parola.replace(" ", "");
+		parola = parola.toLowerCase().replace(" ", "");
 		
 		String consonanti = " ";
 		String vocali = " ";
-		int j = 0;
-		int z = 0;
 		
 		for (int i = 0; i < parola.length(); i++) {
 			if(!isVocale(parola.charAt(i)))
@@ -62,12 +60,6 @@ public class Persona {
 			else vocali += String.valueOf(parola.charAt(i));
 		}
 		
-		
-		
-	
-		
-//		String cons = String.valueOf(consonanti);
-//		String voc = String.valueOf(vocali);
 		
 		String ritorno = consonanti+vocali;
 		
@@ -133,25 +125,7 @@ public class Persona {
 	}
 	
 	public String codiceComune() {
-		String comune = null; 
-		
-		DBconnector connector = new DBconnector();
-
-		connector.connectToDB();
-
-		ResultSet resultSet = connector.exeQuery("SELECT CodFisco FROM comuni WHERE Comune = '" + this.comune + "'");
-
-		try {
-			while(resultSet.next()) {
-				comune = resultSet.getString("CodFisco");
-			}
-			
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return comune;
+		return this.comune;
 	}
 	
 	public String getCodiceFiscale() {
@@ -162,6 +136,110 @@ public class Persona {
 		
 		
 		return this.codiceFiscale;
+	}
+	
+	//-------------- equals
+	
+	
+	public boolean equivale(Persona confrontata) {
+		if( confrontata.getNome().equalsIgnoreCase(this.nome)
+				&& confrontata.getCognome().equalsIgnoreCase(this.cognome)
+				//&& confrontata.getGiorno() == this.giorno
+				&& confrontata.getMese().equalsIgnoreCase(this.mese)
+				&& confrontata.getAnno().equalsIgnoreCase(this.anno)
+				&& confrontata.getSesso().equalsIgnoreCase(this.sesso)
+				&& confrontata.getComune().equalsIgnoreCase(this.comune))
+			return true;
+		
+		return false;
+	}
+
+	//---------------Getters and Setters
+	
+	
+
+	public String getNome() {
+		return nome;
+	}
+
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+
+	public String getCognome() {
+		return cognome;
+	}
+
+
+	public void setCognome(String cognome) {
+		this.cognome = cognome;
+	}
+
+
+	public int getGiorno() {
+		return giorno;
+	}
+
+
+	public void setGiorno(int giorno) {
+		this.giorno = giorno;
+	}
+
+
+	public String getMese() {
+		return mese;
+	}
+
+
+	public void setMese(String mese) {
+		this.mese = mese;
+	}
+
+
+	public String getAnno() {
+		return anno;
+	}
+
+
+	public void setAnno(String anno) {
+		this.anno = anno;
+	}
+
+
+	public String getSesso() {
+		return sesso;
+	}
+
+
+	public void setSesso(String sesso) {
+		this.sesso = sesso;
+	}
+
+
+	public String getComune() {
+		return comune;
+	}
+
+
+	public void setComune(String comune) {
+		this.comune = comune;
+	}
+
+
+	public String getCodiceFiscaleCalcolato() {
+		return this.codiceFiscale;
+	}
+
+	
+	//--------------toString
+
+	@Override
+	public String toString() {
+		return "Persona [codicePersona=" + codicePersona + ", nome=" + nome + ", cognome=" + cognome + ", giorno="
+				+ giorno + ", mese=" + mese + ", anno=" + anno + ", sesso=" + sesso + ", comune=" + comune
+				+ ", codiceFiscale=" + codiceFiscale + "]";
 	}
 
 }
